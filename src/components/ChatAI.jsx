@@ -25,9 +25,16 @@ export default function ChatAI() {
     setLoading(true);
 
     try {
+      //   const res = await fetch(
+      //     `http://localhost:8080/api/${encodeURIComponent(trimmed)}`
+      //   );
+
       const res = await fetch(
-        `http://localhost:8080/api/${encodeURIComponent(trimmed)}`
+        `https://springaicode-production.up.railway.app/api/${encodeURIComponent(
+          trimmed
+        )}`
       );
+
       if (!res.ok) throw new Error("Erreur serveur");
       const text = await res.text();
 
