@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPlus, FaRobot, FaUser } from "react-icons/fa";
 import "../styles/ChatAI.scss";
-import { canMakeRequest, incrementRequestCount } from "../utils/requestLimit";
+import { canSendRequest, incrementRequestCount } from "../utils/requestLimit";
 
 export default function ChatAI() {
   const [input, setInput] = useState("");
@@ -21,7 +21,7 @@ export default function ChatAI() {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    if (!canMakeRequest()) {
+    if (!canSendRequest()) {
       alert("Limite de 100 requêtes par jour atteinte.");
       return;
     }
