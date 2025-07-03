@@ -41,7 +41,7 @@ export default function ChatAI() {
 
   return (
     <div className="chat-container">
-      <h2>Chat IA avec Spring</h2>
+      <h2>BOMMERT GPT</h2>
 
       <div className="chat-window">
         {messages.map((m, i) => (
