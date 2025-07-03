@@ -1,6 +1,6 @@
 const MAX_REQUESTS = 100;
 
-function canSendRequest() {
+export function canSendRequest() {
   const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
   const data = JSON.parse(localStorage.getItem("requestCount") || "{}");
 
@@ -15,7 +15,7 @@ function canSendRequest() {
   return data.count < MAX_REQUESTS;
 }
 
-function incrementRequestCount() {
+export function incrementRequestCount() {
   const today = new Date().toISOString().slice(0, 10);
   const data = JSON.parse(localStorage.getItem("requestCount") || "{}");
 
