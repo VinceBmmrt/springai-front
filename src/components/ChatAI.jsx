@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPlus, FaRobot, FaUser } from "react-icons/fa";
 import "../styles/ChatAI.scss";
+import { canMakeRequest, incrementRequestCount } from "../utils/requestLimit";
 
 export default function ChatAI() {
   const [input, setInput] = useState("");
@@ -19,6 +20,11 @@ export default function ChatAI() {
   async function sendMessage() {
     const trimmed = input.trim();
     if (!trimmed) return;
+
+    if (!canMakeRequest()) {
+      alert("Limite de 100 requêtes par jour atteinte.");
+      return;
+    }
 
     setMessages((prev) => [...prev, { sender: "user", text: trimmed }]);
     setInput("");
@@ -39,6 +45,7 @@ export default function ChatAI() {
       const text = await res.text();
 
       setMessages((prev) => [...prev, { sender: "ai", text }]);
+      incrementRequestCount();
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -72,7 +79,7 @@ export default function ChatAI() {
       </aside>
 
       <main className="chat-main">
-        <h2 className="chat-title">Chat IA avec Spring</h2>
+        <h2 className="chat-title">BOMMERT GPT</h2>
 
         <div className="chat-window">
           {messages.map((m, i) => (
