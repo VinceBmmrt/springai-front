@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { FaPlus, FaRobot, FaUser } from "react-icons/fa";
 import "../styles/ChatAI.scss";
 
 export default function ChatAI() {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { sender: "ai", text: "Salut, je suis Bommert GPT." },
+  ]);
+  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -12,12 +16,13 @@ export default function ChatAI() {
 
   useEffect(scrollToBottom, [messages]);
 
-  const sendMessage = async () => {
+  async function sendMessage() {
     const trimmed = input.trim();
     if (!trimmed) return;
 
     setMessages((prev) => [...prev, { sender: "user", text: trimmed }]);
     setInput("");
+    setLoading(true);
 
     try {
       const res = await fetch(
@@ -32,36 +37,77 @@ export default function ChatAI() {
         ...prev,
         { sender: "ai", text: "Erreur de connexion au serveur." },
       ]);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") sendMessage();
-  };
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function newConversation() {
+    setMessages([
+      { sender: "ai", text: "Salut, je suis GPT Vincent Bommert." },
+    ]);
+    setInput("");
+  }
 
   return (
     <div className="chat-container">
-      <h2>BOMMERT GPT</h2>
+      <aside className="chat-sidebar">
+        <button className="new-conv-btn" onClick={newConversation}>
+          <FaPlus /> Nouvelle conversation
+        </button>
+      </aside>
 
-      <div className="chat-window">
-        {messages.map((m, i) => (
-          <div key={i} className={`chat-message ${m.sender}`}>
-            {m.text}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+      <main className="chat-main">
+        <h2 className="chat-title">Chat IA avec Spring</h2>
 
-      <div className="chat-input-area">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Tape ton message..."
-        />
-        <button onClick={sendMessage}>Envoyer</button>
-      </div>
+        <div className="chat-window">
+          {messages.map((m, i) => (
+            <div key={i} className={`chat-message ${m.sender}`}>
+              <span className="icon">
+                {m.sender === "user" ? <FaUser /> : <FaRobot />}
+              </span>
+              <span className="text">{m.text}</span>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="chat-message ai loading">
+              <span className="icon">
+                <FaRobot />
+              </span>
+              <span className="text">...</span>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        <footer className="chat-input-area">
+          <textarea
+            rows={2}
+            className="chat-input"
+            placeholder="Tape ton message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+          />
+          <button
+            className="chat-send-btn"
+            onClick={sendMessage}
+            disabled={!input.trim() || loading}
+          >
+            Envoyer
+          </button>
+        </footer>
+      </main>
     </div>
   );
 }
